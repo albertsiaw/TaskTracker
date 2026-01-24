@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+.card {
+  @apply bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700
+         rounded-xl p-5 shadow-sm transition;
+}
+.stat-icon {
+  @apply w-6 h-6 mx-auto mb-1;
+}
+.stat-number {
+  @apply text-3xl font-semibold;
+}
+.stat-label {
+  @apply text-sm text-blue-500 dark:text-slate-400;
+}
+.input {
+  @apply flex-1 px-4 py-3 rounded-lg border border-blue-200 dark:border-slate-600
+         bg-white dark:bg-slate-900
+         text-black dark:text-slate-100
+         focus:ring-2 focus:ring-blue-400 outline-none;
+}
+.btn-primary {
+  @apply flex items-center gap-2 px-6 py-3 rounded-lg
+         bg-blue-600 hover:bg-blue-700 text-white font-medium transition;
+}
+.btn-danger {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg
+         bg-red-100 dark:bg-red-900/30
+         text-red-700 dark:text-red-400 hover:bg-red-200 transition;
+}
+.filter-btn {
+  @apply px-4 py-2 rounded-lg border border-blue-200 dark:border-slate-600
+         bg-white dark:bg-slate-800
+         text-blue-700 dark:text-slate-300 font-medium transition;
+}
+.filter-btn-active {
+  @apply bg-blue-600 text-white border-blue-600;
+}
+.icon-btn {
+  @apply p-2 rounded hover:bg-blue-100 dark:hover:bg-slate-700 transition;
+}
