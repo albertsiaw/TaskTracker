@@ -23,11 +23,21 @@ const fields: AuthFormField[] = [{
   type: 'password',
   placeholder: 'Enter your password',
   required: true
+}, {
+  name: 'passwordConfirm',
+  label: 'Confirm Password',
+  type: 'password',
+  placeholder: 'Confirm your password',
+  required: true
 }]
 
 const schema = z.object({
   email: z.email('Invalid email'),
-  password: z.string('Password is required').min(6, 'Must be at least 6 characters')
+  password: z.string('Password is required').min(6, 'Must be at least 6 characters'),
+  passwordConfirm: z.string('Password confirmation is required')
+}).refine(data => data.password === data.passwordConfirm, {
+  message: "Passwords don't match",
+  path: ["passwordConfirm"]
 })
 
 type Schema = z.output<typeof schema>
@@ -35,7 +45,7 @@ type Schema = z.output<typeof schema>
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   loading.value = true
   try {
-    const response: any = await $fetch('/api/auth/login', {
+    const response: any = await $fetch('/api/auth/register', {
       method: 'POST',
       body: {
         email: payload.data.email,
@@ -46,7 +56,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     if (response.success) {
       toast.add({
         title: 'Success',
-        description: `Welcome ${response.user.email}!`,
+        description: `Account created! Welcome ${response.user.email}!`,
         color: 'success'
       })
       
@@ -55,10 +65,10 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       }, 500)
     }
   } catch (error: any) {
-    console.error('Login error:', error)
-    const message = error.data?.statusMessage || error.message || 'Invalid email or password'
+    console.error('Register error:', error)
+    const message = error.data?.statusMessage || error.message || 'Registration failed'
     toast.add({
-      title: 'Login Failed',
+      title: 'Registration Failed',
       description: message,
       color: 'error'
     })
@@ -73,23 +83,21 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     <UPageCard class="w-full max-w-md">
       <UAuthForm
         :schema="schema"
-        title="Login"
-        description="Enter your credentials to access your account."
-        icon="i-lucide-user"
+        title="Create Account"
+        description="Register for a new account."
+        icon="i-lucide-user-plus"
         :fields="fields"
         :loading="loading"
         @submit="onSubmit"
       />
       <div class="mt-4 text-center">
         <p class="text-sm text-slate-600 dark:text-slate-400">
-          Don't have an account?
-          <NuxtLink to="/register" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
-            Register here
+          Already have an account?
+          <NuxtLink to="/login" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            Login here
           </NuxtLink>
         </p>
       </div>
     </UPageCard>
   </div>
 </template>
-
-

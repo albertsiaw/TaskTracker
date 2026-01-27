@@ -7,13 +7,20 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@nuxt/image": "^2.0.0",
     "@nuxt/ui": "^4.3.0",
     "@tailwindcss/vite": "^4.1.18",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^5.66.7",
+    "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
+    "ioredis": "^5.9.2",
+    "maileroo": "^0.0.3",
     "nuxt": "^4.2.2",
     "nuxt-auth-utils": "^0.5.27",
     "pg": "^8.17.2",
@@ -23,6 +30,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.8"
   },

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 defineProps<{
   todos: any[]
-  editingId: number | null
+  editingId: string | null
   editingText: string
+  currentUserId?: string
 }>()
 
 defineEmits([
@@ -23,6 +24,7 @@ defineEmits([
       :todo="todo"
       :editing="editingId === todo.id"
       :editingText="editingText"
+      :currentUserId="currentUserId"
       @toggle="$emit('toggle', todo.id)"
       @delete="$emit('delete', todo.id)"
       @edit="$emit('edit', todo)"

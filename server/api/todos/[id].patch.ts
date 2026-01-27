@@ -6,9 +6,13 @@ import { requireAuth } from '../../utils/auth.helper'
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const todoId = getRouterParam(event, 'id')
+  const body = await readBody(event)
 
   if (!todoId) {
-    throw createError({ statusCode: 400, statusMessage: 'Todo ID is required' })
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Todo ID is required'
+    })
   }
 
   // Verify user owns the todo
@@ -21,7 +25,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Todo not found' })
   }
 
-  await db.delete(todos).where(eq(todos.id, todoId))
+  const [updated] = await db
+    .update(todos)
+    .set({
+      completed: body.completed ?? todo.completed,
+      text: body.text ?? todo.text,
+      isPublic: body.isPublic ?? todo.isPublic
+    })
+    .where(eq(todos.id, todoId))
+    .returning()
 
-  return { success: true }
+  return updated
 })

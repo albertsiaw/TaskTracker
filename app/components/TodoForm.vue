@@ -6,7 +6,7 @@ defineEmits(['update:modelValue', 'submit'])
 
 <template>
   <form
-    @submit="$emit('submit')"
+    @submit.prevent="$emit('submit')"
     class="flex flex-col sm:flex-row gap-3 mb-6"
   >
     <input
