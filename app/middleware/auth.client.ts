@@ -1,12 +1,9 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  if (to.path === '/home') {
-    try {
-      const response = await $fetch('/api/auth', { method: 'GET' })
-      
-      if (!response.user) {
-        return navigateTo('/login')
-      }
-    } catch (error) {
+export default defineNuxtRouteMiddleware(async (to) => {
+  const { user, checkAuth } = useAuth()
+  
+  if (to.path === '/home' || to.path === '/private-todo') {
+    const isAuthenticated = await checkAuth()
+    if (!isAuthenticated || !user.value) {
       return navigateTo('/login')
     }
   }

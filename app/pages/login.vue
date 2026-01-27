@@ -32,34 +32,33 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
+const { login } = useAuth()
+
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   loading.value = true
   try {
-    const response: any = await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: {
-        email: payload.data.email,
-        password: payload.data.password
-      }
-    })
+    const success = await login(payload.data.email, payload.data.password)
 
-    if (response.success) {
+    if (success) {
       toast.add({
         title: 'Success',
-        description: `Welcome ${response.user.email}!`,
+        description: `Welcome back!`,
         color: 'success'
       })
       
-      setTimeout(() => {
-        router.push('/private-todo')
-      }, 500)
+      router.push('/private-todo')
+    } else {
+      toast.add({
+        title: 'Login Failed',
+        description: 'Invalid email or password',
+        color: 'error'
+      })
     }
   } catch (error: any) {
     console.error('Login error:', error)
-    const message = error.data?.statusMessage || error.message || 'Invalid email or password'
     toast.add({
-      title: 'Login Failed',
-      description: message,
+      title: 'Error',
+      description: 'An unexpected error occurred',
       color: 'error'
     })
   } finally {

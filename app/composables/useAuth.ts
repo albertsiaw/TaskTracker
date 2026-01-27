@@ -1,85 +1,72 @@
+import { signIn, signUp, signOut, useSession } from "../utils/auth-client"
+import { computed } from 'vue'
+
 export const useAuth = () => {
-  const user = useState<{ id: string; email: string } | null>('auth-user', () => null)
-  const isAuthenticated = useState<boolean>('auth-authenticated', () => false)
-  const loading = useState<boolean>('auth-loading', () => false)
+    const sessionResponse = useSession()
+    
+    const session = computed(() => sessionResponse.value?.data)
+    const loading = computed(() => sessionResponse.value?.isPending)
+    
+    // Fallback to maintain compatibility with existing code
+    const user = computed(() => session.value?.user || null)
+    const isAuthenticated = computed(() => !!session.value)
 
-  const login = async (email: string, password: string) => {
-    loading.value = true
-    try {
-      const response: any = await $fetch('/api/auth/login', {
-        method: 'POST',
-        body: { email, password }
-      })
-
-      if (response.success) {
-        user.value = response.user
-        isAuthenticated.value = true
-        return true
-      }
-      return false
-    } catch (error) {
-      console.error('Login failed:', error)
-      return false
-    } finally {
-      loading.value = false
+    const login = async (email: string, password: string) => {
+        try {
+            const { error } = await signIn.email({
+                email,
+                password
+            })
+            if (error) {
+                console.error("Login failed:", error.message)
+                return false
+            }
+            return true
+        } catch (error: any) {
+            console.error("Login unexpected error:", error.message)
+            return false
+        }
     }
-  }
 
-  const register = async (email: string, password: string) => {
-    loading.value = true
-    try {
-      const response: any = await $fetch('/api/auth/register', {
-        method: 'POST',
-        body: { email, password }
-      })
-
-      if (response.success) {
-        user.value = response.user
-        isAuthenticated.value = true
-        return true
-      }
-      return false
-    } catch (error) {
-      console.error('Registration failed:', error)
-      return false
-    } finally {
-      loading.value = false
+    const register = async (email: string, password: string, name: string = "") => {
+        const userName = name || (email && email.includes('@') ? email.split('@')[0] : "User")
+        try {
+            const { error } = await signUp.email({
+                email,
+                password,
+                name: userName as string
+            })
+            if (error) {
+                console.error("Registration failed:", error.message)
+                return false
+            }
+            return true
+        } catch (error: any) {
+            console.error("Registration unexpected error:", error.message)
+            return false
+        }
     }
-  }
 
-  const logout = async () => {
-    try {
-      await $fetch('/api/auth/logout', { method: 'POST' })
-      user.value = null
-      isAuthenticated.value = false
-    } catch (error) {
-      console.error('Logout failed:', error)
+    const logout = async () => {
+        try {
+            await signOut()
+            navigateTo('/')
+        } catch (error) {
+            console.error("Logout failed:", error)
+        }
     }
-  }
 
-  const checkAuth = async () => {
-    try {
-      const response: any = await $fetch('/api/auth')
-      if (response?.user) {
-        user.value = response.user
-        isAuthenticated.value = true
-      } else {
-        user.value = null
-        isAuthenticated.value = false
-      }
-    } catch {
-      user.value = null
-      isAuthenticated.value = false
+    const checkAuth = async () => {
+        return !!session.value
     }
-  }
 
-  return {
-    user,
-    isAuthenticated,
-    loading,
-    login,
-    register,
-    logout,
-    checkAuth
-  }
+    return {
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        register,
+        logout,
+        checkAuth
+    }
 }

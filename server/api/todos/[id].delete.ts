@@ -2,9 +2,10 @@ import { db } from '../../database'
 import { todos } from '../../database/schema'
 import { eq, and } from 'drizzle-orm'
 import { requireAuth } from '../../utils/auth.helper'
+import { removeTodoReminders } from '../../utils/reminders'
 
 export default defineEventHandler(async (event) => {
-  const user = requireAuth(event)
+  const user = await requireAuth(event)
   const todoId = getRouterParam(event, 'id')
 
   if (!todoId) {
@@ -21,6 +22,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Todo not found' })
   }
 
+  await removeTodoReminders(todoId)
   await db.delete(todos).where(eq(todos.id, todoId))
 
   return { success: true }

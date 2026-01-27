@@ -42,34 +42,33 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
+const { register } = useAuth()
+
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   loading.value = true
   try {
-    const response: any = await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: {
-        email: payload.data.email,
-        password: payload.data.password
-      }
-    })
+    const success = await register(payload.data.email, payload.data.password)
 
-    if (response.success) {
+    if (success) {
       toast.add({
         title: 'Success',
-        description: `Account created! Welcome ${response.user.email}!`,
+        description: `Account created successfully!`,
         color: 'success'
       })
       
-      setTimeout(() => {
-        router.push('/private-todo')
-      }, 500)
+      router.push('/private-todo')
+    } else {
+      toast.add({
+        title: 'Registration Failed',
+        description: 'Failed to create account. Email might already exist.',
+        color: 'error'
+      })
     }
   } catch (error: any) {
     console.error('Register error:', error)
-    const message = error.data?.statusMessage || error.message || 'Registration failed'
     toast.add({
-      title: 'Registration Failed',
-      description: message,
+      title: 'Error',
+      description: 'An unexpected error occurred during registration',
       color: 'error'
     })
   } finally {

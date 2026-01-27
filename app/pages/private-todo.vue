@@ -14,6 +14,7 @@ interface Todo {
   userId: string
   isPublic: boolean | null
   userEmail?: string
+  deadline?: string | null
   createdAt?: string | null
 }
 
@@ -50,13 +51,17 @@ const loadTodos = async (silent = false) => {
   }
 }
 
-const addTodo = async () => {
-  console.log('Adding private todo:', newTodoText.value)
-  if (!newTodoText.value.trim()) return
+const addTodo = async (payload: { text: string, deadline: string }) => {
+  console.log('Adding private todo:', payload)
+  if (!payload.text.trim()) return
   try {
     const newTodo = await $fetch<Todo>('/api/todos', {
       method: 'POST',
-      body: { text: newTodoText.value, isPublic: false }
+      body: { 
+        text: payload.text, 
+        isPublic: false,
+        deadline: payload.deadline || null
+      }
     })
     todos.value.unshift(newTodo)
     newTodoText.value = ''

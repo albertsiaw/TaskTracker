@@ -4,7 +4,7 @@ import { eq, or, and } from 'drizzle-orm'
 import { requireAuth } from '../../utils/auth.helper'
 
 export default defineEventHandler(async (event) => {
-  const user = requireAuth(event)
+  const user = await requireAuth(event)
 
   // Get all public todos and user's private todos
   const allTodos = await db

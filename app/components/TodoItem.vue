@@ -17,8 +17,8 @@ const isOwner = computed(() => {
 })
 
 const creatorName = computed(() => {
+  if (props.todo?.userName) return props.todo.userName
   if (!props.todo?.userEmail) return 'Unknown'
-  // Extract name from email (e.g., "john" from "john@example.com")
   return props.todo.userEmail.split('@')[0]
 })
 
@@ -26,6 +26,20 @@ const avatarUrl = computed(() => {
   if (!props.todo?.userEmail) return null
   return `https://www.gravatar.com/avatar/${props.todo.userEmail}?d=mp`
 })
+
+const isOverdue = computed(() => {
+  if (!props.todo?.deadline || props.todo.completed) return false
+  return new Date(props.todo.deadline) < new Date()
+})
+
+const formatDeadline = (date: string | Date) => {
+  return new Date(date).toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 </script>
 
 <template>
@@ -73,12 +87,25 @@ const avatarUrl = computed(() => {
       </template>
 
       <template v-else>
-        <span
-          class="break-words flex-1 text-slate-700 dark:text-slate-200"
-          :class="todo.completed && 'line-through text-slate-400 dark:text-slate-500'"
-        >
-          {{ todo.text }}
-        </span>
+        <div class="flex flex-col flex-1">
+          <span
+            class="break-words text-slate-700 dark:text-slate-200"
+            :class="todo.completed && 'line-through text-slate-400 dark:text-slate-500'"
+          >
+            {{ todo.text }}
+          </span>
+          
+          <!-- Deadline Badge -->
+          <div v-if="todo.deadline" class="flex items-center mt-1.5">
+            <div 
+              class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-white shadow-sm transition-all shadow-red-100"
+              :class="isOverdue ? 'bg-red-600 animate-pulse' : 'bg-red-500'"
+            >
+              <Icon :name="isOverdue ? 'heroicons:exclamation-triangle' : 'heroicons:clock'" class="w-3.5 h-3.5" />
+              <span>{{ isOverdue ? 'Overdue' : 'Due' }}: {{ formatDeadline(todo.deadline) }}</span>
+            </div>
+          </div>
+        </div>
       </template>
     </div>
 

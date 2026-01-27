@@ -14,6 +14,7 @@ interface Todo {
   userId: string
   isPublic: boolean | null
   userEmail?: string
+  deadline?: string | null
   createdAt?: string | null
 }
 
@@ -61,15 +62,16 @@ onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
 })
 
-const addTodo = async () => {
-  console.log('Attempting to add public todo:', newTodoText.value)
-  if (!newTodoText.value.trim()) return
+const addTodo = async (payload: { text: string, deadline: string }) => {
+  console.log('Attempting to add public todo:', payload)
+  if (!payload.text.trim()) return
   try {
     const newTodo = await $fetch<Todo>('/api/todos', {
       method: 'POST',
       body: {
-        text: newTodoText.value,
-        isPublic: true
+        text: payload.text,
+        isPublic: true,
+        deadline: payload.deadline || null
       }
     })
     if (newTodo) {

@@ -1,5 +1,5 @@
 import { db } from '../../database'
-import { todos, users } from '../../database/schema'
+import { todos, user } from '../../database/schema'
 import { eq, desc } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
@@ -12,10 +12,11 @@ export default defineEventHandler(async (event) => {
       completed: todos.completed,
       isPublic: todos.isPublic,
       createdAt: todos.createdAt,
-      userEmail: users.email
+      userEmail: user.email,
+      userName: user.name
     })
     .from(todos)
-    .leftJoin(users, eq(todos.userId, users.id))
+    .leftJoin(user, eq(todos.userId, user.id))
     .where(eq(todos.isPublic, true))
     .orderBy(desc(todos.createdAt))
 
