@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
     .where(eq(todos.id, todoId))
     .returning()
 
-  // ✅ Reschedule reminders if deadline changed or handle completion
+  //  Reschedule reminders if deadline changed or handle completion
   if (updated.completed) {
     await removeTodoReminders(updated.id)
   } else if (JSON.stringify(newDeadline) !== JSON.stringify(todo.deadline)) {
