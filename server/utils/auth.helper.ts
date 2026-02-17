@@ -1,4 +1,4 @@
-gitimport { auth } from "./auth";
+import { auth } from "./auth";
 
 export const getUserSession = async (event: any) => {
   const session = await auth.api.getSession({
